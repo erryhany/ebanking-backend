@@ -1,0 +1,43 @@
+# Lance l'application complète : MySQL + backend Spring Boot + frontend Angular.
+# Prérequis : un fichier .env (voir .env.example).
+#   docker compose up -d --build
+# Frontend : http://localhost:4200  ·  API : http://localhost:8085  ·  Swagger : http://localhost:8085/swagger-ui.html
+
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD manquant dans .env}
+      MYSQL_DATABASE: E-BANK
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${DB_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build: .
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET manquant dans .env}
+      DB_URL: jdbc:mysql://mysql:3306/E-BANK?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8085:8085"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    # Par défaut, le frontend est construit directement depuis son dépôt GitHub.
+    # Pour utiliser une copie locale : FRONTEND_CONTEXT=../digital-banking-web dans .env
+    build: ${FRONTEND_CONTEXT:-https://github.com/erryhany/digital-banking-web.git#master}
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data:
