@@ -67,12 +67,10 @@ public class SecurityConfig {
 
     @Bean
     JwtEncoder jwtEncoder() {
-       // String secretkey="1bhgv234ZEazer345678WxCvBn2z3e1bhgv234ZEazer345678WxCvBn2z3eVf45";
         return new NimbusJwtEncoder(new ImmutableSecret<>(secretkey.getBytes()));
     }
     @Bean
     JwtDecoder jwtDecoder() {
-        //String secretkey="1bhgv234ZEazer345678WxCvBn2z3e1bhgv234ZEazer345678WxCvBn2z3eVf45";
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretkey.getBytes(),"HmacSHA1");
         return NimbusJwtDecoder.withSecretKey(secretKeySpec).macAlgorithm(MacAlgorithm.HS512).build() ;
     }

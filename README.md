@@ -1,158 +1,128 @@
-# 🏦 E-Banking Backend
+# E-Banking Backend — API REST Spring Boot sécurisée par JWT
 
-[![Status](https://img.shields.io/badge/Status-En%20développement-orange)](https://github.com/votre-username/ebanking-backend)
-[![Progress](https://img.shields.io/badge/Progress-60%25-yellow)](https://github.com/votre-username/ebanking-backend)
-[![Java](https://img.shields.io/badge/Java-17+-red)](https://openjdk.org/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.2-green)](https://spring.io/projects/spring-boot)
+Backend d'une application de banque en ligne : gestion des clients, des comptes courants et épargne, et des opérations (débit, crédit, virement) avec historique paginé. L'API est stateless, sécurisée par **JWT** (Spring Security OAuth2 Resource Server) avec des rôles **USER** et **ADMIN**.
 
-## 📋 Description
+![Java](https://img.shields.io/badge/Java-17-red)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4-green)
+![Spring Security](https://img.shields.io/badge/Security-JWT-6DB33F)
+![MySQL](https://img.shields.io/badge/DB-MySQL-4479A1)
 
-Backend Spring Boot pour une application de banque en ligne moderne avec gestion complète des comptes bancaires, sécurité OAuth2 et API REST documentée.
+## Fonctionnalités
 
-## 🚀 Fonctionnalités
+- **Clients** : CRUD et recherche par mot-clé
+- **Comptes bancaires** : comptes courants (avec découvert) et comptes épargne (avec taux d'intérêt), modélisés par héritage JPA (`SINGLE_TABLE`)
+- **Opérations** : débit, crédit et virement entre comptes, avec contrôle du solde
+- **Historique** des opérations d'un compte, paginé
+- **Authentification JWT** : jeton signé en HS512, valable 10 minutes
+- **Autorisations par rôle** avec `@PreAuthorize` : lecture pour USER, écriture pour ADMIN
+- **Documentation** de l'API via Swagger UI (springdoc-openapi)
 
-- **Gestion des comptes bancaires** : CRUD complet des comptes
-- **API REST sécurisée** : Endpoints protégés avec OAuth2
-- **Base de données MySQL** : Persistance des données avec JPA
-- **Documentation API** : Interface Swagger/OpenAPI
-- **Architecture en couches** : Services, Repositories, DTOs, Mappers
-- **Gestion des exceptions** : Gestion centralisée des erreurs
-- **Sécurité avancée** : Authentification et autorisation
+## Stack technique
 
-## 🛠️ Technologies utilisées
+| Couche | Technologies |
+|---|---|
+| Langage | Java 17 |
+| Framework | Spring Boot 3.4 (Web, Data JPA, Security, OAuth2 Resource Server) |
+| Sécurité | JWT (Nimbus JOSE), BCrypt |
+| Base de données | MySQL 8 |
+| Documentation | springdoc-openapi (Swagger UI) |
+| Outils | Maven, Lombok |
 
-- **Java 17+** - Langage principal
-- **Spring Boot 3.4.2** - Framework principal
-- **Spring Data JPA** - Persistance des données
-- **Spring Security + OAuth2** - Sécurité et authentification
-- **MySQL 8.2.0** - Base de données
-- **Lombok** - Réduction du code boilerplate
-- **Maven** - Gestion des dépendances
-- **SpringDoc OpenAPI** - Documentation de l'API
-
-## 📊 État du Projet
-
-**Statut :** 🟡 En développement  
-**Progression :** 60%  
-**Dernière mise à jour :** Décembre 2024  
-
-### ✅ Ce qui est terminé
-- [x] Configuration de base Spring Boot
-- [x] Structure du projet (packages, architecture)
-- [x] Configuration de la base de données MySQL
-- [x] Dépendances Maven configurées
-- [x] Sécurité OAuth2 configurée
-- [x] Documentation OpenAPI configurée
-- [x] Architecture en couches (Services, Repositories, DTOs, Mappers)
-- [x] Gestion des exceptions
-
-### 🚧 En cours de développement
-- [ ] Implémentation des services métier
-- [ ] Logique de gestion des comptes bancaires
-- [ ] Validation des données
-- [ ] Tests unitaires
-
-### 📋 À faire
-- [ ] Tests d'intégration
-- [ ] Tests de sécurité
-- [ ] Optimisation des performances
-- [ ] Documentation complète
-- [ ] Déploiement
-- [ ] Monitoring et logging
-
-## 🚀 Installation et démarrage
-
-### Prérequis
-- Java 17 ou supérieur
-- MySQL 8.0 ou supérieur
-- Maven 3.6+
-
-### Étapes d'installation
-
-1. **Cloner le projet**
-   ```bash
-   git clone [URL_DE_VOTRE_DEPOT]
-   cd ebanking-backend
-   ```
-
-2. **Configurer la base de données**
-   - Créer une base de données MySQL
-   - Modifier `src/main/resources/application.properties`
-
-3. **Installer les dépendances**
-   ```bash
-   mvn clean install
-   ```
-
-4. **Lancer l'application**
-   ```bash
-   mvn spring-boot:run
-   ```
-
-5. **Accéder à l'application**
-   - API : http://localhost:8080
-   - Documentation Swagger : http://localhost:8080/swagger-ui.html
-
-## 📚 Structure du Projet
+## Architecture
 
 ```
 src/main/java/com/mourad/ebankingbackend/
-├── security/          # Configuration de la sécurité OAuth2
-├── web/              # Contrôleurs REST
-├── services/         # Logique métier
-├── repositories/     # Accès aux données
-├── dtos/            # Objets de transfert de données
-├── mappers/         # Mappers entre entités et DTOs
-├── exceptions/      # Gestion des exceptions
-├── enums/           # Énumérations
-├── enteties/        # Entités JPA
-└── BankingBackendApplication.java
+├── web/           → contrôleurs REST (comptes, clients)
+├── security/      → configuration Spring Security + endpoint /auth
+├── services/      → logique métier
+├── repositories/  → accès aux données (Spring Data JPA)
+├── enteties/      → entités JPA : Customer, BankAcount, CurrentAccount, SavingAccount, AccountOperation
+├── dtos/          → objets de transfert exposés par l'API
+├── mappers/       → conversion entités ⇄ DTO
+├── exceptions/    → exceptions métier (compte introuvable, solde insuffisant…)
+└── enums/         → statut de compte, type d'opération
 ```
 
-## 🔐 Sécurité
+## Lancer le projet
 
-- **OAuth2 Resource Server** pour la sécurisation des endpoints
-- **JWT** pour l'authentification
-- **Spring Security** pour l'autorisation
-
-## 📖 API Documentation
-
-L'API est documentée avec **SpringDoc OpenAPI** et accessible via :
-- **Swagger UI** : Interface interactive pour tester l'API
-- **OpenAPI JSON** : Spécification OpenAPI 3.0
-
-## 🧪 Tests
+Prérequis : Java 17 ou plus et un serveur MySQL local. La base `E-BANK` est créée automatiquement au démarrage.
 
 ```bash
-# Exécuter tous les tests
-mvn test
-
-# Exécuter les tests avec rapport de couverture
-mvn test jacoco:report
+git clone https://github.com/erryhany/ebanking-backend.git
+cd ebanking-backend
 ```
 
-## 📝 Contribution
+Définir les variables d'environnement. `JWT_SECRET` est obligatoire et doit faire au moins 64 caractères (HS512) :
 
-1. Fork le projet
-2. Créer une branche pour votre fonctionnalité
-3. Commiter vos changements
-4. Pousser vers la branche
-5. Ouvrir une Pull Request
+```bash
+# Linux / macOS
+export JWT_SECRET=$(openssl rand -base64 64 | tr -d '\n')
+export DB_USERNAME=root      # optionnel, "root" par défaut
+export DB_PASSWORD=          # optionnel, vide par défaut
+```
 
-## 📄 Licence
+```powershell
+# Windows PowerShell
+$env:JWT_SECRET = [Convert]::ToBase64String((1..64 | ForEach-Object { Get-Random -Max 256 }))
+```
 
-Ce projet est sous licence [MIT](LICENSE).
+Puis démarrer :
 
-## 👨‍💻 Auteur
+```bash
+./mvnw spring-boot:run       # Windows : mvnw.cmd spring-boot:run
+```
 
-**Mourad** - Développeur Full Stack
+| Ressource | URL |
+|---|---|
+| API | http://localhost:8085 |
+| Swagger UI | http://localhost:8085/swagger-ui.html |
 
-## 📞 Support
+## Authentification
 
-Pour toute question ou suggestion, n'hésitez pas à :
-- Ouvrir une issue sur GitHub
-- Me contacter directement
+Comptes de démonstration, définis en mémoire et réservés au développement :
 
----
+| Utilisateur | Rôles |
+|---|---|
+| `user1` | USER |
+| `admin` | USER, ADMIN |
 
-**Note :** Ce projet est actuellement en développement actif. Les fonctionnalités peuvent évoluer et certaines parties peuvent ne pas être encore implémentées.
+Le mot de passe de démonstration est défini dans `SecurityConfig`.
+
+```bash
+# 1. Obtenir un jeton
+curl -X POST "http://localhost:8085/auth/login" -d "username=admin&password=<mot_de_passe>"
+# → {"access_token":"eyJ..."}
+
+# 2. Appeler l'API avec le jeton
+curl "http://localhost:8085/customers" -H "Authorization: Bearer eyJ..."
+```
+
+## Endpoints principaux
+
+| Méthode | Route | Rôle | Description |
+|---|---|---|---|
+| POST | `/auth/login` | public | Obtenir un jeton JWT |
+| GET | `/auth/profile` | authentifié | Profil de l'utilisateur connecté |
+| GET | `/customers` | USER | Liste des clients |
+| GET | `/customers/search?keyword=` | USER | Recherche de clients |
+| GET | `/customers/{id}` | USER | Détail d'un client |
+| POST | `/customers` | ADMIN | Créer un client |
+| PUT | `/customers/{id}` | ADMIN | Modifier un client |
+| DELETE | `/customers/{id}` | ADMIN | Supprimer un client |
+| GET | `/accounts` | authentifié | Liste des comptes |
+| GET | `/accounts/{id}` | authentifié | Détail d'un compte |
+| GET | `/accounts/{id}/PageOperations?page=&size=` | authentifié | Historique paginé |
+| POST | `/accounts/debit` | authentifié | Débiter un compte |
+| POST | `/accounts/credit` | authentifié | Créditer un compte |
+| POST | `/accounts/transfer` | authentifié | Virement entre deux comptes |
+
+## Pistes d'évolution
+
+- Utilisateurs et rôles stockés en base au lieu d'être en mémoire
+- Gestion globale des erreurs avec `@ControllerAdvice`
+- Tests unitaires et d'intégration (JUnit 5, MockMvc, Testcontainers)
+- Docker Compose (application et MySQL)
+
+## Auteur
+
+**Mourad Erryhany** — Développeur Java / Spring Boot · [GitHub](https://github.com/erryhany)
